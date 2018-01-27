@@ -17,16 +17,7 @@ namespace CyberCortex.Presentation
         }
         public void Run()
         {
-            double[][] patterns = new double[4][];
-            
-            for (int i = 0; i < patterns.Length; i++)
-            {
-                patterns[i] = new double[] { 1, 2, 3, 4, 10 };
-            }
-
-            patterns = DataNormalizer.NormalizePatterns(patterns);
-
-            //Debug.WriteLine($"{DataNormalizer.NormalizePatterns(patterns)}");
+           Debug.WriteLine($"App is running");
         }
     }
 }

@@ -17,7 +17,6 @@ namespace CyberCortex.Core.Utils
                 patternsNormalized[i] = NormalizePattern(patterns[i]);
             }
 
-
             return patternsNormalized;
         }
 
