@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using CyberCortex.Core.Utils;
 
 namespace CyberCortex.Presentation
 {
@@ -16,8 +17,16 @@ namespace CyberCortex.Presentation
         }
         public void Run()
         {
-            Debug.WriteLine($"Hello");
-            this._mainPage.MyTest();
+            double[][] patterns = new double[4][];
+            
+            for (int i = 0; i < patterns.Length; i++)
+            {
+                patterns[i] = new double[] { 1, 2, 3, 4, 10 };
+            }
+
+            patterns = DataNormalizer.NormalizePatterns(patterns);
+
+            //Debug.WriteLine($"{DataNormalizer.NormalizePatterns(patterns)}");
         }
     }
 }

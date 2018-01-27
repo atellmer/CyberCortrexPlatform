@@ -24,10 +24,5 @@ namespace CyberCortex
         {
             this.InitializeComponent();
         }
-
-        public void MyTest()
-        {
-            Debug.WriteLine($"World");
-        }
     }
 }
