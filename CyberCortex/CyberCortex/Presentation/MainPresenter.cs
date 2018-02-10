@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using CyberCortex.Core.Utils;
+using CyberCortex.Core.AI.AdaBoost;
 
 namespace CyberCortex.Presentation
 {
