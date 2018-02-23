@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CyberCortex.Core.AI
 {
-    struct Sample
+    public struct Sample
     {
         private double[] _pattern;
         private int _answer;
@@ -31,5 +31,31 @@ namespace CyberCortex.Core.AI
         {
             return $"Pattern: [{string.Join("; ", _pattern)}], answer: {_answer}";
         }
-    }
+
+        public static Sample Normalize(Sample sample)
+        {
+            double[] pattern = sample.GetPattern();
+            double[] patternNormalized = new double[pattern.Length];
+            int count = pattern.Length;
+            double average = 0.0;
+            double stdDev = 0.0;
+
+            average = pattern.Average();
+
+            foreach (double feature in pattern)
+            {
+                stdDev += Math.Pow((feature - average), 2);
+            }
+
+            stdDev = Math.Sqrt(stdDev / (count - 1));
+
+            for (int i = 0; i < pattern.Length; i++)
+            {
+                patternNormalized[i] = (pattern[i] - average) / stdDev;
+                patternNormalized[i] = (Math.Exp(patternNormalized[i]) - Math.Exp(-1 * patternNormalized[i])) / (Math.Exp(patternNormalized[i]) + Math.Exp(-1 * patternNormalized[i]));
+            }
+
+            return new Sample(patternNormalized, sample.GetAnswer());
+        }
+    }      
 }
