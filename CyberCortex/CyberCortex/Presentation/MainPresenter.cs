@@ -31,14 +31,19 @@ namespace CyberCortex.Presentation
 
             //selector.Run();*/
 
-            double[] pattern = new double[] { 0, 1, 2, 3 };
-            int answer = 1;
-            Sample testSample = new Sample(pattern, answer);
 
-            
+            Sample[] samples = new Sample[] {
+              new Sample(new double[] { 80, 180, 6, 1 }, 1),
+              new Sample(new double[] { 50, 160, 500, 2 }, -1),
+              new Sample(new double[] { 90, 190, 20, 1 }, 1),
+              new Sample(new double[] { 80, 180, 7, 2 }, -1)
+            };
+
+            WeakClassifier weakClassifier = WeakClassifier.Train(samples);
 
 
-           Debug.WriteLine($"App is running: {testSample}");
+
+            Debug.WriteLine($"App is running: {weakClassifier}");
         }
     }
 }

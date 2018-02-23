@@ -3,97 +3,132 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CyberCortex.Core.AI;
 
 namespace CyberCortex.Core.AI.AdaBoost
 {
-    public class WeakClassifier
+    public struct WeakClassifier
     {
-        private double[] _classifier = new double[3];
-        private double[] _data;
-        private double[] _answer;
-        private int _length;
-        private int _size;
+        public enum Direction { Up = 1, Down = -1 };
+        public enum Answer { Positive = 1, Negative = -1 };
+ 
+        private int? _featureIndex;
+        private double? _threshold;
+        private Direction? _direction;
 
-        public WeakClassifier(int size, int length)
+        public int? GetFeatureIndex()
         {
-            this._data = new double[size];
-            this._answer = new double[size];
-            this._length = length;
-            this._size = size;
+            return _featureIndex;
         }
 
-        public double[] Train(double[][] samples, double[] answers)
+        public void SetFeatureIndex(int featureIndex)
         {
-            double threshold = 0;
-            double direction = 0;
-            double minimalError = Double.PositiveInfinity;
-            double[] error = new double[_length];
+            _featureIndex = featureIndex;
+        }
 
-            for (int j = 0; j < _length; j++)
+        public double? GetThreshold()
+        {
+            return _threshold;
+        }
+
+        public void SetThreshold(double threshold)
+        {
+           _threshold = threshold;
+        }
+
+        public Direction? GetDirection()
+        {
+            return _direction;
+        }
+
+        public void SetDirection(Direction? direction)
+        {
+            _direction = direction;
+        }
+
+        public override string ToString()
+        {
+            return $"feature index: {_featureIndex}, threshold: {_threshold}, direction: {(int)_direction}";
+        }
+
+        public static WeakClassifier Train(Sample[] samples)
+        {
+            int size = samples.Length;
+            int length = samples[0].GetPattern().Length;
+            double[] data = new double[size];
+            int[] answers = new int[size];   
+            double threshold = 0;
+            Direction? direction = null;
+            double minimalError = Double.PositiveInfinity;
+            double[] error = new double[length];
+            WeakClassifier weakClassifier = new WeakClassifier();
+
+            for (int j = 0; j < length; j++)
             {
-                for (int i = 0; i < _size; i++)
+                for (int i = 0; i < size; i++)
                 {
-                    _data[i] = samples[i][j];
-                    _answer[i] = answers[i];
+                    data[i] = samples[i].GetPattern()[j];
+                    answers[i] = samples[i].GetAnswer();
                 }
 
-                Array.Sort(_data, _answer);
+                Array.Sort(data, answers);
 
-                for (int i = 0; i < _size - 1; i++)
+                for (int i = 0; i < size - 1; i++)
                 {
-                    if ((_answer[i] != _answer[i + 1]) && (_data[i] != _data[i + 1]))
+                    if ((answers[i] != answers[i + 1]) && (data[i] != data[i + 1]))
                     {
-                        threshold = (_data[i] + _data[i + 1]) / 2.0;
+                        threshold = (data[i] + data[i + 1]) / 2.0;
 
-                        if (_answer[i] >= 0)
+                        if (answers[i] >= 0)
                         {
-                            direction = 1;
+                            direction = Direction.Up;
                         }
                         else
                         {
-                            direction = -1;
+                            direction = Direction.Down;
                         }
 
                         error[j] = 0;
 
-                        for (int k = 0; k < _size; k++)
+                        for (int k = 0; k < size; k++)
                         {
-                            error[j] += Math.Abs(_answer[k] - GetPredict(_data[k], threshold, direction)) / 2.0;
+                            error[j] += Math.Abs(answers[k] - (int)GetPredict(data[k], threshold, (Direction)direction)) / 2.0;
                         }
 
                         if (error[j] < minimalError)
                         {
                             minimalError = error[j];
-                            _classifier[0] = j;
-                            _classifier[1] = threshold;
-                            _classifier[2] = direction;
+                            weakClassifier.SetFeatureIndex(j);
+                            weakClassifier.SetThreshold(threshold);
+                            weakClassifier.SetDirection((Direction)direction);
+
                         }
                     }
                 }
             }
 
-            return _classifier;
+            return weakClassifier;
         }
 
-        public double GetPredict(double value, double treshold, double direction)
+        public static Answer? GetPredict(double value, double treshold, Direction direction)
         {
             if (direction > 0)
             {
                 if (value <= treshold)
                 {
-                    return 1;
+                    return Answer.Positive;
                 }
 
-                return -1;
+                return Answer.Negative;
             }
             else
             {
                 if (value <= treshold)
                 {
-                    return -1;
+                    return Answer.Negative;
                 }
- 
-                return 1;
+
+                return Answer.Positive;
             }
         }
     }
