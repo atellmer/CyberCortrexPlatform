@@ -39,11 +39,15 @@ namespace CyberCortex.Presentation
               new Sample(new double[] { 80, 180, 7, 2 }, -1)
             };
 
-            WeakClassifier weakClassifier = WeakClassifier.Train(samples);
+            //WeakClassifier weakClassifier = WeakClassifier.Train(samples);
+
+            Random random = new Random();
+
+            Sample[] samplesSelected = ProbabilisticSelector.Select(random, new double[] { 0.18, 0.8, 0.01, 0.01 }, samples);
 
 
 
-            Debug.WriteLine($"App is running: {weakClassifier}");
+            //Debug.WriteLine($"App is running: {weakClassifier}");
         }
     }
 }

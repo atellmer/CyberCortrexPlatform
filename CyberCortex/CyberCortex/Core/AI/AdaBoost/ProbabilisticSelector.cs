@@ -1,163 +1,137 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CyberCortex.Core.AI.AdaBoost
 {
     public class ProbabilisticSelector
     {
-        private int _size;
-        private int _length;
-        private Random random = new Random();
-
-        public ProbabilisticSelector(int size, int length)
+        public static Sample[] Select(Random random, double[] weightsInit, Sample[] samples)
         {
-            this._size = size;
-            this._length = length;
-        }
-
-        public void Run(double[] weightsData, double[][] data, double[] answer, double[][] samples, double[] answers)
-        {
-            double[] weights = new double[_size];
-            double[] wheel = new double[_size];
-            int[] masIndexWeights = new int[_size];
+            int size = samples.Length;
+            double[] weights = new double[size];
+            double[] wheel = new double[size];
+            int[] weightsIndexes = new int[size];
             int count = 0;
-            double randomValue = 0;
-            double sector = 0;
-            int indexSector = 0;
-            int positiveRead = 0;
-            int negativeRead = 0;
-            int positiveWrite = 0;
-            int negativeWrite = 0;
-            double minWhellPart = 0;
+            int positiveAnswersCount = 0;
+            int negativeAnswersCount = 0;
+            int positiveAnswersSelectedCount = 0;
+            int negativeAnswersSelectedCount = 0;
+            Sample[] samplesSelected = new Sample[size];
 
-            for (int i = 0; i < _size; i++)
+            weights = (double[])weightsInit.Clone();
+
+            for (int i = 0; i < size; i++)
             {
-                if (answers[i] == 1)
+                weightsIndexes[i] = i;
+
+                if (samples[i].GetAnswer() == 1)
                 {
-                    positiveRead++;
+                    positiveAnswersCount++;
                 }
-                if (answers[i] == -1)
+
+                if (samples[i].GetAnswer() == -1)
                 {
-                    negativeRead++;
+                    negativeAnswersCount++;
                 }
             }
 
-            for (int i = 0; i < _size; i++)
+            Array.Sort(weights, weightsIndexes);
+
+            wheel = GenerateProbabilisticWhell(size, weights);
+
+            while (count < wheel.Length)
             {
-                weights[i] = weightsData[i];
-                masIndexWeights[i] = i;
-            }
+                double randomValue = GetRandomValue(random, wheel.Min());
 
-            Array.Sort(weights, masIndexWeights);
-            indexSector = 0;
-
-            for (int i = 3; i < _size + 3; i++)
-            {
-                sector = 0;
-                for (int j = 0; j < i - 2; j++)
+                for (int i = 0; i < wheel.Length - 1; i++)
                 {
-                    sector += weights[j];
-                }
-                wheel[indexSector] = sector * 100;
-                indexSector++;
-            }
-
-            int shift = 1;
-            while (count < _size)
-            {
-                minWhellPart = wheel.Min();
-                int index = 0;
-                bool flag = false;
-
-                if (minWhellPart >= 1)
-                {
-                    randomValue = random.Next(100);
-                }
-                if (minWhellPart < 1 && minWhellPart >= 0.1)
-                {
-                    randomValue = random.Next(1000) * 0.1;
-                }
-                if (minWhellPart < 0.1 && minWhellPart >= 0.01)
-                {
-                    randomValue = random.Next(10000) * 0.01;
-                }
-                if (minWhellPart < 0.01 && minWhellPart >= 0.001)
-                {
-                    randomValue = random.Next(100000) * 0.001;
-                }
-                if (minWhellPart < 0.001 && minWhellPart >= 0.0001)
-                {
-                    randomValue = random.Next(1000000) * 0.0001;
-                }
-                if (minWhellPart < 0.0001 && minWhellPart >= 0.00001)
-                {
-                    randomValue = random.Next(10000000) * 0.00001;
-                }
-                if (minWhellPart < 0.00001 && minWhellPart >= 0.000001)
-                {
-                    randomValue = random.Next(100000000) * 0.000001;
-                }
-                if (minWhellPart < 0.000001)
-                {
-                    randomValue = random.Next(1000000000) * 0.0000001;
-                }
-
-                for (int i = 0; i < _size - 1; i++)
-                {
-                    if (wheel[i] > randomValue)
+                    if (randomValue > wheel[i] && randomValue <= wheel[i + 1])
                     {
-                        if (i == 0)
+                        if ((samples[weightsIndexes[i + 1]].GetAnswer() == 1) && (positiveAnswersSelectedCount < positiveAnswersCount))
                         {
-                            index = masIndexWeights[i];
+                            samplesSelected[count] = samples[weightsIndexes[i + 1]];
+                            positiveAnswersSelectedCount++;
+                            count++;
                         }
 
-                        if (i >= shift)
+                        if ((samples[weightsIndexes[i + 1]].GetAnswer() == -1) && (negativeAnswersSelectedCount < negativeAnswersCount))
                         {
-                            if (randomValue > wheel[i - shift])
-                            {
-                                index = masIndexWeights[i];
-                                flag = true;
-                            }
-                        }
-
-                        if (flag == true)
-                        {
-                            if ((answers[index] == 1) && (positiveWrite < positiveRead))
-                            {
-                                for (int j = 0; j < _length; j++)
-                                {
-                                    data[count][j] = samples[index][j];
-                                }
-                                answer[count] = answers[index];
-                                positiveWrite++;
-                                count++;
-                            }
-
-                            if ((answers[index] == -1) && (negativeWrite < negativeRead))
-                            {
-                                for (int j = 0; j < _length; j++)
-                                {
-                                    data[count][j] = samples[index][j];
-                                }
-                                answer[count] = answers[index];
-                                negativeWrite++;
-                                count++;
-                            }
-                        }
-                        else
-                        {
-                            shift++;
-                            if (shift >= _size)
-                            {
-                                shift = 1;
-                            }
+                            samplesSelected[count] = samples[weightsIndexes[i + 1]];
+                            negativeAnswersSelectedCount++;
+                            count++;
                         }
                     }
                 }
             }
+
+            return samplesSelected;
+        }
+
+        private static double[] GenerateProbabilisticWhell(int sectorsCount, double[] weights)
+        {
+            double sector = 0;
+            int index = 0;
+            double[] wheel = new double[sectorsCount];
+
+            for (int i = 3; i < sectorsCount + 3; i++)
+            {
+                sector = 0;
+
+                for (int j = 0; j < i - 2; j++)
+                {
+                    sector += weights[j];
+                }
+
+                wheel[index] = sector * 100;
+                index++;
+            }
+
+            return wheel;
+        }
+
+        private static double GetRandomValue(Random random, double minSectorSize)
+        {
+            if (minSectorSize >= 1)
+            {
+                return random.Next(100);
+            }
+
+            if (minSectorSize < 1 && minSectorSize >= 0.1)
+            {
+                return random.Next(1000) * 0.1;
+            }
+
+            if (minSectorSize < 0.1 && minSectorSize >= 0.01)
+            {
+                return random.Next(10000) * 0.01;
+            }
+
+            if (minSectorSize < 0.01 && minSectorSize >= 0.001)
+            {
+                return random.Next(100000) * 0.001;
+            }
+
+            if (minSectorSize < 0.001 && minSectorSize >= 0.0001)
+            {
+                return random.Next(1000000) * 0.0001;
+            }
+
+            if (minSectorSize < 0.0001 && minSectorSize >= 0.00001)
+            {
+                return random.Next(10000000) * 0.00001;
+            }
+
+            if (minSectorSize < 0.00001 && minSectorSize >= 0.000001)
+            {
+                return random.Next(100000000) * 0.000001;
+            }
+
+            if (minSectorSize < 0.000001)
+            {
+                return random.Next(1000000000) * 0.0000001;
+            }
+
+            return 0.0;
         }
     }
 }
