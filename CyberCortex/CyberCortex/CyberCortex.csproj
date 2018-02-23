@@ -95,7 +95,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\AI\AdaBoost\ProbabilisticSelector.cs" />
     <Compile Include="Core\AI\AdaBoost\WeakClassifier.cs" />
+    <Compile Include="Core\AI\Sample.cs" />
     <Compile Include="Core\Utils\DataNormalizer.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
