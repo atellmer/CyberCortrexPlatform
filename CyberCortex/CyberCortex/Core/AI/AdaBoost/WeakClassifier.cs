@@ -11,11 +11,11 @@ namespace CyberCortex.Core.AI.AdaBoost
         public enum Direction { Up = 1, Down = -1 };
         public enum Answer { Positive = 1, Negative = -1 };
  
-        private int? _featureIndex;
-        private double? _threshold;
-        private Direction? _direction;
+        private int _featureIndex;
+        private double _threshold;
+        private Direction _direction;
 
-        public int? GetFeatureIndex()
+        public int GetFeatureIndex()
         {
             return _featureIndex;
         }
@@ -25,7 +25,7 @@ namespace CyberCortex.Core.AI.AdaBoost
             _featureIndex = featureIndex;
         }
 
-        public double? GetThreshold()
+        public double GetThreshold()
         {
             return _threshold;
         }
@@ -35,12 +35,12 @@ namespace CyberCortex.Core.AI.AdaBoost
            _threshold = threshold;
         }
 
-        public Direction? GetDirection()
+        public Direction GetDirection()
         {
             return _direction;
         }
 
-        public void SetDirection(Direction? direction)
+        public void SetDirection(Direction direction)
         {
             _direction = direction;
         }
@@ -109,7 +109,7 @@ namespace CyberCortex.Core.AI.AdaBoost
             return weakClassifier;
         }
 
-        public static Answer? GetPredict(double value, double treshold, Direction direction)
+        public static Answer GetPredict(double value, double treshold, Direction direction)
         {
             if (direction > 0)
             {

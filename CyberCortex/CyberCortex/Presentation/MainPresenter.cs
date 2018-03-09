@@ -19,35 +19,39 @@ namespace CyberCortex.Presentation
         }
         public void Run()
         {
-            /*
-            double[][] patterns = new double[3][];
-
-            patterns[0] = new double[3] { 80, 180, 6 };
-            patterns[1] = new double[3] { 50, 160, 500 };
-            patterns[2] = new double[3] { 90, 190, 20 };
-
-
-            ProbabilisticSelector selector = new ProbabilisticSelector(3, 3);
-
-            //selector.Run();*/
-
 
             Sample[] samples = new Sample[] {
               new Sample(new double[] { 80, 180, 6, 1 }, 1),
               new Sample(new double[] { 50, 160, 500, 2 }, -1),
               new Sample(new double[] { 90, 190, 20, 1 }, 1),
-              new Sample(new double[] { 80, 180, 7, 2 }, -1)
+              new Sample(new double[] { 80, 180, 100, 2 }, -1),
+              new Sample(new double[] { 55, 170, 5, 2 }, -1)
+            };
+
+            Sample[] testSamples = new Sample[] {
+              new Sample(new double[] { 70, 170, 4, 1 }, 1),
+              new Sample(new double[] { 95, 182, 24, 1 }, 1),
+              new Sample(new double[] { 130, 170, 250, 2 }, -1),
+              new Sample(new double[] { 65, 185, 600, 2 }, -1),
+              new Sample(new double[] { 60, 185, 0, 2 }, -1)
             };
 
             //WeakClassifier weakClassifier = WeakClassifier.Train(samples);
 
-            Random random = new Random();
+            //Random random = new Random();
 
-            Sample[] samplesSelected = ProbabilisticSelector.Select(random, new double[] { 0.18, 0.8, 0.01, 0.01 }, samples);
+            //Sample[] samplesSelected = ProbabilisticSelector.Select(random, new double[] { 0.18, 0.8, 0.01, 0.01 }, samples);
+
+            StrongClassifier[] classifiers = StrongClassifier.Train(samples, 10, "1");
+
+            int predict1 = (int)StrongClassifier.GetPredict(testSamples[0].GetPattern(), classifiers);
+            int predict2 = (int)StrongClassifier.GetPredict(testSamples[1].GetPattern(), classifiers);
+            int predict3 = (int)StrongClassifier.GetPredict(testSamples[2].GetPattern(), classifiers);
+            int predict4 = (int)StrongClassifier.GetPredict(testSamples[3].GetPattern(), classifiers);
+            int predict5 = (int)StrongClassifier.GetPredict(testSamples[4].GetPattern(), classifiers);
 
 
-
-            //Debug.WriteLine($"App is running: {weakClassifier}");
+            Debug.WriteLine($"App is running: {classifiers}");
         }
     }
 }
