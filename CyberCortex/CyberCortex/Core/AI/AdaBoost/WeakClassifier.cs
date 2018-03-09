@@ -47,7 +47,7 @@ namespace CyberCortex.Core.AI.AdaBoost
 
         public override string ToString()
         {
-            return $"feature index: {_featureIndex}, threshold: {_threshold}, direction: {(int)_direction}";
+            return $"Weak Classifier: [feature index: {_featureIndex}, threshold: {_threshold}, direction: {(int)_direction}]";
         }
 
         public static WeakClassifier Train(Sample[] samples)

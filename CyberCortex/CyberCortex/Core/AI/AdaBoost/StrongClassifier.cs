@@ -33,6 +33,11 @@ namespace CyberCortex.Core.AI.AdaBoost
             _alfa = alfa;
         }
 
+        public override string ToString()
+        {
+            return $"Strong classifier: [weak: {_weakClassifier}, alfa: {_alfa}]";
+        }
+
         public static StrongClassifier[] Train(Sample[] samples, int classifiersCount, string className)
         {
             int size = samples.Length;
